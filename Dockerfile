@@ -2,9 +2,8 @@ FROM brimstone/ubuntu:14.04
 
 # Install the packages we need, clean up after them and us
 RUN apt-get update \
-    && apt-get install -y curl unzip git openssh-server \
+    && apt-get install -y curl unzip git openssh-server supervisor \
     && apt-get clean \
-    && rm /etc/ssh/ssh_host_* \
     && rm -rf /var/lib/apt/lists
 
 # Configure a user for git and allow users to login via ssh
@@ -29,11 +28,12 @@ RUN curl -L https://github.com/$(\
     && mkdir gogs/log \
     && chown git: gogs/log
 
-# Add our deploy script
-ADD deploy /deploy
+# Add supervisord config
+ADD pre-start /etc/supervisor/scripts/pre-start
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose our port
 EXPOSE 22 3000
 
 # Set our command
-CMD "/deploy"
+CMD ["/usr/bin/supervisord"]

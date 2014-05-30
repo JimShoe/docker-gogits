@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Make sure permissions are correct
+chown git: /home/git 
+
+# regen ssh host keys if they don't exist
+if [ ! -e /etc/ssh/ssh_host_* ]; then
+  dpkg-reconfigure openssh-server
+fi
+
+# Start sshd
+supervisorctl start sshd
+
+# start gogits
+supervisorctl start gogits
+
+exit 0
